@@ -21,3 +21,4 @@ build/
 Thumbs.
 
 package-lock.json
+.next
