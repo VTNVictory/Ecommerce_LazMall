@@ -1,75 +1,161 @@
-import { Search, ShoppingCart, Check, Package, RefreshCcw } from "lucide-react";
+"use client";
+
+import { Search, ShoppingCart, Check, Package, RefreshCcw, User, LogOut, ClipboardList, Shield } from "lucide-react";
+import Link from "next/link";
+import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Header() {
+  const { cartCount } = useCart();
+  const { user, logout } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchVal, setSearchVal] = useState("");
+
+  // Đồng bộ giá trị tìm kiếm trên ô input khi query thay đổi
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q) {
+      setSearchVal(q);
+    } else {
+      setSearchVal("");
+    }
+  }, [searchParams]);
+
+  const handleLogoutClick = async () => {
+    await logout();
+    router.push("/");
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchVal.trim()) {
+      router.push(`/?q=${encodeURIComponent(searchVal.trim())}`);
+    } else {
+      router.push("/");
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
       {/* Main Header */}
       <div className="max-w-[1400px] mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <Link href="/" className="flex-shrink-0 cursor-pointer block">
             <div className="text-2xl font-bold bg-gradient-to-r from-[#1a2332] to-[#2d3e50] bg-clip-text text-transparent">
               LazMall
             </div>
-            <div className="text-[10px] text-gray-500 -mt-1">CHÍNH HÃNG</div>
-          </div>
+            <div className="text-[10px] text-gray-500 -mt-1 tracking-wider">CHÍNH HÃNG</div>
+          </Link>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-2xl">
+          <form onSubmit={handleSearchSubmit} className="flex-1 max-w-2xl">
             <div className="relative">
               <input
                 type="text"
+                value={searchVal}
+                onChange={(e) => setSearchVal(e.target.value)}
                 placeholder="Tìm kiếm thương hiệu, sản phẩm chính hãng..."
-                className="w-full px-4 py-3 pr-12 border-2 border-[#f57224] rounded-lg focus:outline-none focus:border-[#d45a1b]"
+                className="w-full px-4 py-3 pr-12 border-2 border-[#f57224] rounded-lg focus:outline-none focus:border-[#d45a1b] text-sm"
               />
-              <button className="absolute right-0 top-0 h-full px-5 bg-[#f57224] text-white rounded-r-lg hover:bg-[#d45a1b] transition-colors">
+              <button 
+                type="submit"
+                className="absolute right-0 top-0 h-full px-5 bg-[#f57224] text-white rounded-r-lg hover:bg-[#d45a1b] transition-colors cursor-pointer"
+              >
                 <Search className="w-5 h-5" />
               </button>
             </div>
-          </div>
+          </form>
 
-          {/* Trust Badges & Cart */}
+          {/* Trust Badges & Auth & Cart */}
           <div className="flex items-center gap-6">
-            <div className="hidden lg:flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-green-600" />
-                <span className="text-gray-700 font-medium">100% Chính hãng</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <RefreshCcw className="w-4 h-4 text-blue-600" />
-                <span className="text-gray-700 font-medium">15 ngày đổi trả</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Package className="w-4 h-4 text-purple-600" />
-                <span className="text-gray-700 font-medium">Miễn phí vận chuyển</span>
-              </div>
+            {/* Auth section */}
+            <div className="flex items-center gap-4 border-r border-gray-200 pr-4">
+              {user ? (
+                <div className="relative group flex items-center gap-1.5 cursor-pointer text-sm">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                    user.role === "ADMIN" ? "bg-red-100 text-red-600" : "bg-orange-100 text-[#f57224]"
+                  }`}>
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="hidden md:block text-left">
+                    <p className="text-[10px] text-gray-400 -mb-0.5">
+                      {user.role === "ADMIN" ? "Quản trị viên" : "Xin chào,"}
+                    </p>
+                    <p className="font-semibold text-gray-700 max-w-[120px] truncate flex items-center gap-1.5">
+                      {user.name}
+                      {user.role === "ADMIN" && (
+                        <span className="bg-red-100 text-red-600 text-[8px] font-extrabold px-1.5 py-0.5 rounded tracking-wide">ADMIN</span>
+                      )}
+                    </p>
+                  </div>
+                  
+                  {/* Account Dropdown */}
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    {user.role === "ADMIN" && (
+                      <>
+                        <Link href="/admin/orders" className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer font-bold">
+                          <Shield className="w-4 h-4 text-red-500" />
+                          Quản lý đơn hàng (Admin)
+                        </Link>
+                        <hr className="border-gray-100 my-1" />
+                      </>
+                    )}
+                    <Link href="/orders" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                      <ClipboardList className="w-4 h-4 text-gray-400" />
+                      Đơn hàng của tôi
+                    </Link>
+                    <hr className="border-gray-100 my-1" />
+                    <button
+                      onClick={handleLogoutClick}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer text-left font-medium"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Đăng xuất
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <Link 
+                  href="/login" 
+                  className="flex items-center gap-1 text-sm font-semibold text-gray-700 hover:text-[#f57224] transition-colors cursor-pointer"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Đăng nhập</span>
+                </Link>
+              )}
             </div>
 
             {/* Cart */}
-            <button className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <Link href="/cart" className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer block">
               <ShoppingCart className="w-6 h-6 text-gray-700" />
-              <span className="absolute -top-1 -right-1 bg-[#f57224] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                0
-              </span>
-            </button>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#f57224] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold animate-pulse">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Mobile Trust Badges */}
-      <div className="lg:hidden border-t border-gray-200 py-2 px-4">
-        <div className="flex items-center justify-around text-xs">
-          <div className="flex items-center gap-1">
-            <Check className="w-3 h-3 text-green-600" />
-            <span className="text-gray-600">Chính hãng</span>
+      {/* Trust Badges */}
+      <div className="border-t border-gray-100 py-2 px-4 bg-gray-50/50">
+        <div className="max-w-[1400px] mx-auto flex items-center justify-around text-[10px] md:text-xs text-gray-500 font-medium">
+          <div className="flex items-center gap-1.5">
+            <Check className="w-3.5 h-3.5 text-green-600" />
+            <span>100% Chính hãng</span>
           </div>
-          <div className="flex items-center gap-1">
-            <RefreshCcw className="w-3 h-3 text-blue-600" />
-            <span className="text-gray-600">Đổi trả 15 ngày</span>
+          <div className="flex items-center gap-1.5">
+            <RefreshCcw className="w-3.5 h-3.5 text-blue-600" />
+            <span>Đổi trả 15 ngày</span>
           </div>
-          <div className="flex items-center gap-1">
-            <Package className="w-3 h-3 text-purple-600" />
-            <span className="text-gray-600">Freeship</span>
+          <div className="flex items-center gap-1.5">
+            <Package className="w-3.5 h-3.5 text-purple-600" />
+            <span>Freeship toàn quốc</span>
           </div>
         </div>
       </div>

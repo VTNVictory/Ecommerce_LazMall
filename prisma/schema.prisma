@@ -1,0 +1,70 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("USER") // USER, ADMIN
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  icon      String    // Tên icon từ lucide-react
+  color     String    // Màu nền CSS
+  products  Product[]
+}
+
+model Product {
+  id            Int         @id @default(autoincrement())
+  name          String
+  description   String      @default("")
+  image         String
+  price         Float
+  originalPrice Float?
+  rating        Float       @default(5.0)
+  reviewCount   Int         @default(0)
+  soldCount     String      @default("0") // Hỗ trợ lưu định dạng "2.5k+"
+  stock         Int         @default(100)
+  discount      Int?
+  isOfficial    Boolean     @default(true)
+  isFlashSale   Boolean     @default(false)
+  categoryId    Int
+  category      Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  orderItems    OrderItem[]
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  userId          String?     // Liên kết với User (optional để hỗ trợ khách vãng lai)
+  user            User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  customerAddress String
+  totalAmount     Float
+  status          String      @default("PENDING") // PENDING, PROCESSING, DELIVERED, CANCELLED
+  createdAt       DateTime    @default(now())
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  price     Float
+}

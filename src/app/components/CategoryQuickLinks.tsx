@@ -1,3 +1,5 @@
+"use client";
+
 import { Smartphone, Shirt, Sparkles, Baby, Home, Watch, Dumbbell, BookOpen } from "lucide-react";
 
 const categories = [
@@ -11,28 +13,49 @@ const categories = [
   { id: 8, name: "Sách", icon: BookOpen, color: "bg-indigo-100 text-indigo-600" },
 ];
 
-export default function CategoryQuickLinks() {
+interface CategoryQuickLinksProps {
+  selectedId: number | null;
+  onSelect: (id: number | null) => void;
+}
+
+export default function CategoryQuickLinks({ selectedId, onSelect }: CategoryQuickLinksProps) {
   return (
     <section className="max-w-[1400px] mx-auto px-4 py-6">
       <div className="bg-white rounded-2xl shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-800">Danh Mục Nổi Bật</h2>
+          {selectedId !== null && (
+            <button
+              onClick={() => onSelect(null)}
+              className="text-sm text-[#f57224] hover:underline font-semibold cursor-pointer"
+            >
+              Xem tất cả
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
           {categories.map((category) => {
             const Icon = category.icon;
+            const isSelected = selectedId === category.id;
             return (
               <button
                 key={category.id}
-                className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-all group"
+                onClick={() => onSelect(isSelected ? null : category.id)}
+                className={`flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-all group cursor-pointer ${
+                  isSelected ? "bg-orange-50/50 ring-2 ring-[#f57224]" : ""
+                }`}
               >
                 <div
-                  className={`w-16 h-16 rounded-full ${category.color} flex items-center justify-center group-hover:scale-110 transition-transform`}
+                  className={`w-16 h-16 rounded-full ${category.color} flex items-center justify-center group-hover:scale-110 transition-transform ${
+                    isSelected ? "scale-110" : ""
+                  }`}
                 >
                   <Icon className="w-8 h-8" />
                 </div>
-                <span className="text-xs md:text-sm text-gray-700 font-medium text-center">
+                <span className={`text-xs md:text-sm font-medium text-center ${
+                  isSelected ? "text-[#f57224] font-bold" : "text-gray-700"
+                }`}>
                   {category.name}
                 </span>
               </button>
