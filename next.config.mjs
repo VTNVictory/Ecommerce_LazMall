@@ -16,12 +16,7 @@ const nextConfig = {
       }
     ],
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  }
+  // Đã xóa bỏ block 'eslint' và 'typescript' không còn được hỗ trợ tại đây
 };
 
 export default nextConfig;

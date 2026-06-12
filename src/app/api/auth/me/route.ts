@@ -13,7 +13,7 @@ interface DecodedToken {
 
 export async function GET() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const tokenCookie = cookieStore.get("lazmall_auth_token");
 
     if (!tokenCookie || !tokenCookie.value) {

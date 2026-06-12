@@ -18,7 +18,7 @@ export async function POST(
     const orderId = params.id;
 
     // Xác thực người dùng
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const tokenCookie = cookieStore.get("lazmall_auth_token");
 
     if (!tokenCookie || !tokenCookie.value) {

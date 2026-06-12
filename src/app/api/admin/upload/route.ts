@@ -21,7 +21,7 @@ interface DecodedToken {
 export async function POST(request: Request) {
   try {
     // 1. Xác thực quyền ADMIN từ cookie token
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const tokenCookie = cookieStore.get("lazmall_auth_token");
 
     if (!tokenCookie || !tokenCookie.value) {

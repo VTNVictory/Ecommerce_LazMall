@@ -11,8 +11,8 @@ interface DecodedToken {
 }
 
 // Hàm dùng chung kiểm tra quyền ADMIN
-function checkAdminPermission() {
-  const cookieStore = cookies();
+async function checkAdminPermission() {
+  const cookieStore = await cookies();
   const tokenCookie = cookieStore.get("lazmall_auth_token");
 
   if (!tokenCookie || !tokenCookie.value) {
@@ -38,7 +38,7 @@ export async function PUT(
 ) {
   try {
     try {
-      checkAdminPermission();
+      await checkAdminPermission();
     } catch (err: any) {
       if (err.message === "UNAUTHORIZED") return NextResponse.json({ error: "Chưa đăng nhập" }, { status: 401 });
       return NextResponse.json({ error: "Quyền truy cập bị từ chối" }, { status: 403 });
@@ -101,7 +101,7 @@ export async function DELETE(
 ) {
   try {
     try {
-      checkAdminPermission();
+      await checkAdminPermission();
     } catch (err: any) {
       if (err.message === "UNAUTHORIZED") return NextResponse.json({ error: "Chưa đăng nhập" }, { status: 401 });
       return NextResponse.json({ error: "Quyền truy cập bị từ chối" }, { status: 403 });
