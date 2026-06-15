@@ -3,10 +3,11 @@ import { db } from "@/lib/db";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const { id: rawId } = await params;
+    const id = parseInt(rawId);
     if (isNaN(id)) {
       return NextResponse.json(
         { error: "ID sản phẩm không hợp lệ" },

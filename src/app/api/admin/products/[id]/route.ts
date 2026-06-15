@@ -34,7 +34,7 @@ async function checkAdminPermission() {
 // 1. PUT: Cập nhật sản phẩm
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     try {
@@ -44,7 +44,8 @@ export async function PUT(
       return NextResponse.json({ error: "Quyền truy cập bị từ chối" }, { status: 403 });
     }
 
-    const productId = parseInt(params.id);
+    const { id: rawId } = await params;
+    const productId = parseInt(rawId);
     if (isNaN(productId)) {
       return NextResponse.json({ error: "ID sản phẩm không hợp lệ" }, { status: 400 });
     }
@@ -97,7 +98,7 @@ export async function PUT(
 // 2. DELETE: Xóa sản phẩm
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     try {
@@ -107,7 +108,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Quyền truy cập bị từ chối" }, { status: 403 });
     }
 
-    const productId = parseInt(params.id);
+    const { id: rawId } = await params;
+    const productId = parseInt(rawId);
     if (isNaN(productId)) {
       return NextResponse.json({ error: "ID sản phẩm không hợp lệ" }, { status: 400 });
     }

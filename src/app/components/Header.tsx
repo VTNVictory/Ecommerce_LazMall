@@ -4,12 +4,10 @@ import { Search, ShoppingCart, Check, Package, RefreshCcw, User, LogOut, Clipboa
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function Header() {
-  const { cartCount } = useCart();
-  const { user, logout } = useAuth();
+function SearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchVal, setSearchVal] = useState("");
@@ -24,11 +22,6 @@ export default function Header() {
     }
   }, [searchParams]);
 
-  const handleLogoutClick = async () => {
-    await logout();
-    router.push("/");
-  };
-
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchVal.trim()) {
@@ -36,6 +29,37 @@ export default function Header() {
     } else {
       router.push("/");
     }
+  };
+
+  return (
+    <form onSubmit={handleSearchSubmit} className="flex-1 max-w-2xl">
+      <div className="relative">
+        <input
+          type="text"
+          value={searchVal}
+          onChange={(e) => setSearchVal(e.target.value)}
+          placeholder="Tìm kiếm thương hiệu, sản phẩm chính hãng..."
+          className="w-full px-4 py-3 pr-12 border-2 border-[#f57224] rounded-lg focus:outline-none focus:border-[#d45a1b] text-sm"
+        />
+        <button 
+          type="submit"
+          className="absolute right-0 top-0 h-full px-5 bg-[#f57224] text-white rounded-r-lg hover:bg-[#d45a1b] transition-colors cursor-pointer"
+        >
+          <Search className="w-5 h-5" />
+        </button>
+      </div>
+    </form>
+  );
+}
+
+export default function Header() {
+  const { cartCount } = useCart();
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogoutClick = async () => {
+    await logout();
+    router.push("/");
   };
 
   return (
@@ -52,23 +76,26 @@ export default function Header() {
           </Link>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="flex-1 max-w-2xl">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchVal}
-                onChange={(e) => setSearchVal(e.target.value)}
-                placeholder="Tìm kiếm thương hiệu, sản phẩm chính hãng..."
-                className="w-full px-4 py-3 pr-12 border-2 border-[#f57224] rounded-lg focus:outline-none focus:border-[#d45a1b] text-sm"
-              />
-              <button 
-                type="submit"
-                className="absolute right-0 top-0 h-full px-5 bg-[#f57224] text-white rounded-r-lg hover:bg-[#d45a1b] transition-colors cursor-pointer"
-              >
-                <Search className="w-5 h-5" />
-              </button>
+          <Suspense fallback={
+            <div className="flex-1 max-w-2xl">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm thương hiệu, sản phẩm chính hãng..."
+                  className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:outline-none text-sm bg-gray-50"
+                  disabled
+                />
+                <button 
+                  disabled
+                  className="absolute right-0 top-0 h-full px-5 bg-gray-300 text-white rounded-r-lg"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+              </div>
             </div>
-          </form>
+          }>
+            <SearchBar />
+          </Suspense>
 
           {/* Trust Badges & Auth & Cart */}
           <div className="flex items-center gap-6">

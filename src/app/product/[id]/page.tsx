@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { ImageWithFallback } from "../../components/ImageWithFallback";
@@ -32,7 +32,9 @@ function formatPrice(price: number): string {
   return price.toLocaleString("vi-VN") + "đ";
 }
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const unwrappedParams = use(params);
+  const id = unwrappedParams.id;
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -43,7 +45,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     async function fetchProduct() {
       try {
         setLoading(true);
-        const res = await fetch(`/api/products/${params.id}`);
+        const res = await fetch(`/api/products/${id}`);
         if (!res.ok) throw new Error("Sản phẩm không tồn tại");
         const data = await res.json();
         setProduct(data);
@@ -55,7 +57,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       }
     }
     fetchProduct();
-  }, [params.id]);
+  }, [id]);
 
   const handleDecrease = () => {
     if (quantity > 1) setQuantity(quantity - 1);
