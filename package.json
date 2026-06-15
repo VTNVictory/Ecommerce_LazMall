@@ -79,10 +79,13 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.12.12",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
     "postcss": "^8.5.15",
     "prisma": "^5.14.0",
     "tailwindcss": "4.1.12",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
