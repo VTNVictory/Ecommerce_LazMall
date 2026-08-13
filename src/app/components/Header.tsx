@@ -11,6 +11,8 @@ function SearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchVal, setSearchVal] = useState("");
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [isFocused, setIsFocused] = useState(false);
 
   // Đồng bộ giá trị tìm kiếm trên ô input khi query thay đổi
   useEffect(() => {
@@ -22,6 +24,28 @@ function SearchBar() {
     }
   }, [searchParams]);
 
+  // Lấy danh sách gợi ý (Debounced)
+  useEffect(() => {
+    if (!searchVal.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/products?q=${encodeURIComponent(searchVal)}&limit=5`);
+        if (res.ok) {
+          const data = await res.json();
+          setSuggestions(data.products || []);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchVal]);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchVal.trim()) {
@@ -32,12 +56,14 @@ function SearchBar() {
   };
 
   return (
-    <form onSubmit={handleSearchSubmit} className="flex-1 max-w-2xl">
+    <form onSubmit={handleSearchSubmit} className="flex-1 max-w-2xl relative z-50">
       <div className="relative">
         <input
           type="text"
           value={searchVal}
           onChange={(e) => setSearchVal(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setTimeout(() => setIsFocused(false), 200)}
           placeholder="Tìm kiếm thương hiệu, sản phẩm chính hãng..."
           className="w-full px-4 py-3 pr-12 border-2 border-[#f57224] rounded-lg focus:outline-none focus:border-[#d45a1b] text-sm"
         />
@@ -48,6 +74,36 @@ function SearchBar() {
           <Search className="w-5 h-5" />
         </button>
       </div>
+
+      {/* Dropdown Gợi ý sản phẩm */}
+      {isFocused && searchVal.trim() && suggestions.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden py-2">
+          <div className="px-4 py-2 text-xs font-bold text-gray-400 bg-gray-50/50">GỢI Ý SẢN PHẨM</div>
+          {suggestions.map((item) => (
+            <Link 
+              key={item.id} 
+              href={`/product/${item.id}`}
+              className="flex items-center gap-3 px-4 py-2 hover:bg-orange-50 transition-colors"
+            >
+              <div className="w-10 h-10 rounded overflow-hidden border border-gray-100 flex-shrink-0 bg-white">
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800 line-clamp-1">{item.name}</p>
+                <p className="text-xs font-bold text-[#f57224]">
+                  {item.price.toLocaleString("vi-VN")}đ
+                </p>
+              </div>
+            </Link>
+          ))}
+          <div 
+            onClick={handleSearchSubmit}
+            className="px-4 py-3 text-sm font-medium text-center text-indigo-600 hover:bg-gray-50 border-t border-gray-100 cursor-pointer mt-1"
+          >
+            Xem tất cả kết quả cho "{searchVal}"
+          </div>
+        </div>
+      )}
     </form>
   );
 }
@@ -59,7 +115,7 @@ export default function Header() {
 
   const handleLogoutClick = async () => {
     await logout();
-    router.push("/");
+    window.location.href = "/";
   };
 
   return (
@@ -68,11 +124,14 @@ export default function Header() {
       <div className="max-w-[1400px] mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0 cursor-pointer block">
-            <div className="text-2xl font-bold bg-gradient-to-r from-[#1a2332] to-[#2d3e50] bg-clip-text text-transparent">
-              LazMall
+          <Link href="/" className="flex-shrink-0 cursor-pointer block flex items-center gap-3">
+            <img src="/logo.png" alt="LazMall" className="h-14 object-contain" />
+            <div className="flex flex-col justify-center">
+              <div className="text-3xl font-black bg-gradient-to-r from-[#f57224] to-[#d45a1b] bg-clip-text text-transparent leading-none">
+                LazMall
+              </div>
+              <div className="text-xs text-gray-500 font-semibold tracking-[0.2em] mt-1">CHÍNH HÃNG</div>
             </div>
-            <div className="text-[10px] text-gray-500 -mt-1 tracking-wider">CHÍNH HÃNG</div>
           </Link>
 
           {/* Search Bar */}
@@ -112,7 +171,7 @@ export default function Header() {
                     <p className="text-[10px] text-gray-400 -mb-0.5">
                       {user.role === "ADMIN" ? "Quản trị viên" : "Xin chào,"}
                     </p>
-                    <p className="font-semibold text-gray-700 max-w-[120px] truncate flex items-center gap-1.5">
+                    <p className="font-semibold text-gray-700 max-w-[160px] truncate flex items-center gap-1.5">
                       {user.name}
                       {user.role === "ADMIN" && (
                         <span className="bg-red-100 text-red-600 text-[8px] font-extrabold px-1.5 py-0.5 rounded tracking-wide">ADMIN</span>
@@ -127,6 +186,15 @@ export default function Header() {
                         <Link href="/admin/orders" className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer font-bold">
                           <Shield className="w-4 h-4 text-red-500" />
                           Quản lý đơn hàng (Admin)
+                        </Link>
+                        <hr className="border-gray-100 my-1" />
+                      </>
+                    )}
+                    {user.role === "SELLER" && (
+                      <>
+                        <Link href="/seller" className="flex items-center gap-2 px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 cursor-pointer font-bold">
+                          <Package className="w-4 h-4 text-orange-500" />
+                          Kênh Người Bán
                         </Link>
                         <hr className="border-gray-100 my-1" />
                       </>

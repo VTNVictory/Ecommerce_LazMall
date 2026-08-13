@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, ShoppingCart, Eye } from "lucide-react";
+import { Star, ShoppingCart, Eye, TrendingUp } from "lucide-react";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
@@ -61,81 +61,100 @@ export default function ProductCard({
     <>
       <div
         onClick={handleCardClick}
-        className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl hover:border-[#f57224] transition-all duration-300 cursor-pointer group flex flex-col h-full"
+        className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col h-full relative"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Image Container */}
-        <div className="relative aspect-square overflow-hidden bg-gray-50 flex-shrink-0">
-          <ImageWithFallback
-            src={image}
-            alt={name}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          />
-
-          {/* Official Badge */}
-          {isOfficial && (
-            <div className="absolute top-2 left-2 bg-[#f57224] text-white px-2 py-1 text-xs font-bold rounded z-10">
-              Mall
-            </div>
-          )}
-
-          {/* Discount Badge */}
-          {discount && (
-            <div className="absolute top-2 right-2 bg-[#ffeb3b] text-[#d32f2f] px-2 py-1 text-xs font-bold rounded z-10">
-              -{discount}%
-            </div>
-          )}
-
-          {/* Hover Actions */}
-          <div
-            className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 transition-opacity duration-300 z-10 ${
-              isHovered ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <div className="flex gap-2">
-              <button
-                onClick={handleAddToCart}
-                className="flex-1 bg-[#f57224] hover:bg-[#d45a1b] text-white py-2 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <ShoppingCart className="w-4 h-4" />
-                Thêm vào giỏ
-              </button>
-              <button 
-                onClick={handleQuickView}
-                className="bg-white hover:bg-gray-100 text-gray-800 p-2 rounded-lg transition-colors cursor-pointer"
-              >
-                <Eye className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+        {/* Decorative subtle border on hover */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" style={{ padding: '1px' }}>
+          <div className="w-full h-full bg-white rounded-2xl"></div>
         </div>
 
-        {/* Product Info */}
-        <div className="p-3 flex flex-col flex-1 justify-between">
-          <div>
-            {/* Product Name */}
-            <h3 className="text-sm text-gray-800 line-clamp-2 mb-2 h-10 leading-5 font-medium">{name}</h3>
+        <div className="relative z-10 flex flex-col h-full bg-white rounded-2xl overflow-hidden">
+          {/* Image Container */}
+          <div className="relative aspect-square overflow-hidden bg-gray-50 flex-shrink-0">
+            <ImageWithFallback
+              src={image}
+              alt={name}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+            />
+            
+            {/* Overlay gradient for premium look */}
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-            {/* Price */}
-            <div className="mb-2">
-              <div className="text-lg font-bold text-[#f57224]">{formatPrice(price)}</div>
-              {originalPrice && (
-                <div className="text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</div>
+            {/* Badges */}
+            <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+              {isOfficial && (
+                <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-2.5 py-1 text-xs font-bold rounded-lg shadow-md flex items-center gap-1 backdrop-blur-sm">
+                  <Star className="w-3 h-3 fill-current" />
+                  Mall
+                </div>
               )}
+            </div>
+
+            {discount && (
+              <div className="absolute top-3 right-3 bg-gradient-to-br from-yellow-300 to-yellow-500 text-red-700 px-2.5 py-1.5 text-xs font-black rounded-lg shadow-md transform rotate-3 group-hover:rotate-6 transition-transform z-10">
+                -{discount}%
+              </div>
+            )}
+
+            {/* Hover Actions */}
+            <div
+              className={`absolute inset-x-0 bottom-0 p-4 transition-all duration-300 z-20 ${
+                isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}
+            >
+              <div className="flex gap-2">
+                <button
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-gray-900 hover:bg-gray-800 text-white py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg backdrop-blur-md"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  Thêm vào giỏ
+                </button>
+                <button 
+                  onClick={handleQuickView}
+                  className="bg-white/90 hover:bg-white text-gray-900 p-2.5 rounded-xl transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg backdrop-blur-md"
+                >
+                  <Eye className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Rating & Sales */}
-          <div className="flex items-center justify-between text-xs text-gray-600 mt-2 border-t border-gray-100 pt-2">
-            <div className="flex items-center gap-1">
-              <div className="flex items-center gap-1 text-[#ffc107]">
-                <Star className="w-3 h-3 fill-current" />
-                <span className="text-gray-700 font-medium">{rating}</span>
+          {/* Product Info */}
+          <div className="p-4 flex flex-col flex-1 justify-between bg-white relative">
+            <div>
+              {/* Product Name */}
+              <h3 className="text-sm text-gray-700 line-clamp-2 h-10 leading-5 font-medium group-hover:text-gray-900 transition-colors">{name}</h3>
+
+              {/* Price */}
+              <div className="mt-3 flex items-baseline gap-2 flex-wrap">
+                <div className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">
+                  {formatPrice(price)}
+                </div>
+                {originalPrice && (
+                  <div className="text-xs text-gray-400 line-through font-medium">
+                    {formatPrice(originalPrice)}
+                  </div>
+                )}
               </div>
-              <span className="text-gray-400">({reviewCount})</span>
             </div>
-            <span className="text-gray-500">Đã bán {soldCount}</span>
+
+            {/* Rating & Sales */}
+            <div className="flex items-center justify-between text-xs text-gray-600 mt-4 border-t border-gray-50 pt-3">
+              <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 text-yellow-400">
+                  <Star className="w-3.5 h-3.5 fill-current drop-shadow-sm" />
+                  <span className="text-gray-800 font-bold">{rating}</span>
+                </div>
+                <span className="text-gray-400">({reviewCount})</span>
+              </div>
+              <span className="text-gray-500 flex items-center gap-1 font-medium">
+                {parseInt(soldCount) > 1000 && <TrendingUp className="w-3 h-3 text-red-500" />}
+                Đã bán {soldCount}
+              </span>
+            </div>
           </div>
         </div>
       </div>

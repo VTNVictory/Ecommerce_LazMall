@@ -5,9 +5,13 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log("Bắt đầu dọn dẹp cơ sở dữ liệu cũ...");
+  await prisma.review.deleteMany({});
+  await prisma.address.deleteMany({});
+  await prisma.voucher.deleteMany({});
   await prisma.orderItem.deleteMany({});
   await prisma.order.deleteMany({});
   await prisma.product.deleteMany({});
+  await prisma.shop.deleteMany({});
   await prisma.category.deleteMany({});
   await prisma.user.deleteMany({});
 
@@ -33,6 +37,33 @@ async function main() {
     },
   });
   console.log("Đã tạo tài khoản quản trị:", adminUser.email);
+
+  // Tạo thêm một SELLER demo
+  const sellerUser = await prisma.user.create({
+    data: {
+      name: "Người Bán Apple Official",
+      email: "seller@lazmall.com",
+      password: hashedPassword,
+      role: "SELLER",
+    },
+  });
+
+  console.log("Đang tạo Shop demo...");
+  const appleShop = await prisma.shop.create({
+    data: {
+      name: "Apple Flagship Store",
+      description: "Cửa hàng ủy quyền chính thức của Apple tại Việt Nam.",
+      userId: sellerUser.id,
+    },
+  });
+
+  const adminShop = await prisma.shop.create({
+    data: {
+      name: "LazMall Official Store",
+      description: "Gian hàng chính hãng do LazMall phân phối.",
+      userId: adminUser.id,
+    },
+  });
 
   console.log("Đang tạo danh mục (Categories)...");
   const categoriesData = [
@@ -73,6 +104,7 @@ async function main() {
       isOfficial: true,
       isFlashSale: true,
       categoryId: catDienTu,
+      shopId: appleShop.id,
     },
     {
       name: "iPhone 15 Pro Max 256GB",
@@ -86,6 +118,7 @@ async function main() {
       isOfficial: true,
       isFlashSale: true,
       categoryId: catDienTu,
+      shopId: appleShop.id,
     },
     {
       name: "Sony WH-1000XM5 Headphones",
@@ -99,6 +132,7 @@ async function main() {
       isOfficial: true,
       isFlashSale: true,
       categoryId: catDienTu,
+      shopId: adminShop.id,
     },
     {
       name: "iPad Pro 12.9\" M2",
@@ -112,6 +146,7 @@ async function main() {
       isOfficial: true,
       isFlashSale: true,
       categoryId: catDienTu,
+      shopId: appleShop.id,
     },
     {
       name: "Apple Watch Ultra 2",
@@ -125,6 +160,7 @@ async function main() {
       isOfficial: true,
       isFlashSale: true,
       categoryId: catDongHo,
+      shopId: appleShop.id,
     },
   ];
 
@@ -143,6 +179,7 @@ async function main() {
       isOfficial: true,
       isFlashSale: false,
       categoryId: catDienTu,
+      shopId: appleShop.id,
     },
     {
       name: "iPhone 15 Pro Max 256GB - Chính hãng VN/A - Trả góp 0%",

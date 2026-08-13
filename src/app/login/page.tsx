@@ -63,12 +63,15 @@ export default function LoginPage() {
         </Link>
 
         {/* Logo */}
-        <div className="text-center">
-          <span className="text-4xl font-extrabold bg-gradient-to-r from-[#1a2332] to-[#2d3e50] bg-clip-text text-transparent">
-            LazMall
-          </span>
-          <span className="block text-[10px] text-gray-500 tracking-widest font-bold mt-1">CHÍNH HÃNG</span>
-          <h2 className="mt-6 text-2xl font-bold text-gray-800 tracking-tight">Đăng nhập tài khoản của bạn</h2>
+        <div className="text-center flex flex-col items-center">
+          <img src="/logo.png" alt="LazMall Logo" className="h-20 w-auto object-contain drop-shadow-md mb-2" />
+          <div className="flex flex-col justify-center">
+            <span className="text-4xl font-black bg-gradient-to-r from-[#f57224] to-[#d45a1b] bg-clip-text text-transparent leading-none">
+              LazMall
+            </span>
+            <span className="block text-xs text-gray-500 font-semibold tracking-[0.2em] mt-1">CHÍNH HÃNG</span>
+          </div>
+          <h2 className="mt-8 text-2xl font-bold text-gray-800 tracking-tight">Đăng nhập tài khoản của bạn</h2>
         </div>
       </div>
 

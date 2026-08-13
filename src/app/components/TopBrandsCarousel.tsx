@@ -46,47 +46,58 @@ const brands = [
 
 export default function TopBrandsCarousel() {
   return (
-    <section className="max-w-[1400px] mx-auto px-4 py-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Thương Hiệu Nổi Bật</h2>
-        <button className="flex items-center gap-2 text-[#f57224] hover:text-[#d45a1b] font-semibold">
+    <section className="max-w-[1400px] mx-auto px-4 py-8">
+      <div className="flex items-end justify-between mb-8">
+        <div>
+          <h2 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-900 to-purple-800">
+            Thương Hiệu Nổi Bật
+          </h2>
+          <p className="text-gray-500 mt-2 font-medium">Bộ sưu tập từ các thương hiệu hàng đầu</p>
+        </div>
+        <button className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-semibold group transition-colors px-4 py-2 bg-indigo-50 hover:bg-indigo-100 rounded-full">
           Xem tất cả
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {brands.map((brand) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        {brands.map((brand, index) => (
           <div
             key={brand.id}
-            className="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
+            className="group cursor-pointer bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 transform hover:-translate-y-2 animate-fade-in-up relative"
+            style={{ animationDelay: `${index * 100}ms` }}
           >
+            {/* Glow effect on hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
             {/* Cover Image */}
             <div className="relative aspect-[4/3] overflow-hidden">
               <ImageWithFallback
                 src={brand.coverImage}
                 alt={brand.name}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent transition-opacity duration-300" />
 
               {/* Logo Overlay */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-full p-2 shadow-lg">
-                <ImageWithFallback
-                  src={brand.logo}
-                  alt={`${brand.name} logo`}
-                  className="w-full h-full object-cover rounded-full"
-                />
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-full p-1.5 shadow-[0_0_20px_rgba(0,0,0,0.2)] group-hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-shadow duration-300 z-10 transform group-hover:-translate-y-2">
+                <div className="w-full h-full overflow-hidden rounded-full">
+                  <ImageWithFallback
+                    src={brand.logo}
+                    alt={`${brand.name} logo`}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Brand Info */}
-            <div className="p-4 text-center">
-              <div className="flex items-center justify-center gap-1 mb-2">
-                <h3 className="font-bold text-gray-800">{brand.name}</h3>
-                {brand.verified && <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-500" />}
+            <div className="pt-8 pb-5 px-4 text-center relative z-10 bg-white group-hover:bg-gradient-to-b group-hover:from-white group-hover:to-indigo-50/30 transition-colors">
+              <div className="flex items-center justify-center gap-1.5 mb-3">
+                <h3 className="font-extrabold text-gray-900 text-lg group-hover:text-indigo-900 transition-colors">{brand.name}</h3>
+                {brand.verified && <BadgeCheck className="w-5 h-5 text-blue-500 fill-white drop-shadow-sm" />}
               </div>
-              <div className="inline-block px-3 py-1 bg-[#fff3ed] text-[#f57224] text-sm font-semibold rounded-full">
+              <div className="inline-block px-4 py-1.5 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 text-xs font-bold rounded-full shadow-sm border border-indigo-100/50 group-hover:scale-105 transition-transform">
                 {brand.discount}
               </div>
             </div>

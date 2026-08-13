@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Shield, LayoutDashboard, DollarSign, ShoppingBag, ListChecks, Calendar, User, Phone, MapPin, Loader2, Edit3, Trash2, Plus, Box, Percent, Check, X } from "lucide-react";
@@ -365,7 +363,6 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header />
       
       <main className="flex-grow max-w-[1200px] mx-auto px-4 py-8 w-full">
         {/* Header Dashboard */}
@@ -908,7 +905,6 @@ export default function AdminOrdersPage() {
 
       </main>
 
-      <Footer />
     </div>
   );
 }

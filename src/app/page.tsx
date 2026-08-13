@@ -46,48 +46,55 @@ function HomeContent() {
   const isFiltering = selectedCategoryId !== null || searchQuery !== "";
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
+      {/* Global Background Decorations */}
+      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-indigo-50/80 via-white to-transparent -z-10 pointer-events-none"></div>
+      
       <Header />
-      <main className="flex-grow">
+      <main className="flex-grow pt-4 pb-12 space-y-8 md:space-y-12">
         {/* Chỉ hiện Hero khi không tìm kiếm hoặc lọc */}
         {!isFiltering && <HeroSection />}
         
-        <CategoryQuickLinks 
-          selectedId={selectedCategoryId} 
-          onSelect={setSelectedCategoryId} 
-        />
+        <div className="relative">
+          <CategoryQuickLinks 
+            selectedId={selectedCategoryId} 
+            onSelect={setSelectedCategoryId} 
+          />
+        </div>
         
         {/* Chỉ hiện Carousel thương hiệu và Flash Sale khi không lọc và không tìm kiếm */}
         {!isFiltering && (
-          <>
-            <TopBrandsCarousel />
+          <div className="space-y-8 md:space-y-12">
             <FlashSaleSection />
-          </>
+            <TopBrandsCarousel />
+          </div>
         )}
         
-        {/* Thanh lọc sản phẩm nâng cao */}
-        <FilterBar 
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          filterOfficial={filterOfficial}
-          setFilterOfficial={setFilterOfficial}
-          filterDiscount={filterDiscount}
-          setFilterDiscount={setFilterDiscount}
-          onPriceFilter={(min, max) => {
-            setMinPrice(min);
-            setMaxPrice(max);
-          }}
-        />
-        
-        <ProductGrid 
-          categoryId={selectedCategoryId} 
-          searchQuery={searchQuery} 
-          sortBy={sortBy}
-          filterOfficial={filterOfficial}
-          filterDiscount={filterDiscount}
-          minPrice={minPrice}
-          maxPrice={maxPrice}
-        />
+        {/* Thanh lọc sản phẩm nâng cao & Grid */}
+        <div className="max-w-[1400px] mx-auto px-4 flex flex-col gap-6">
+          <FilterBar 
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            filterOfficial={filterOfficial}
+            setFilterOfficial={setFilterOfficial}
+            filterDiscount={filterDiscount}
+            setFilterDiscount={setFilterDiscount}
+            onPriceFilter={(min, max) => {
+              setMinPrice(min);
+              setMaxPrice(max);
+            }}
+          />
+          
+          <ProductGrid 
+            categoryId={selectedCategoryId} 
+            searchQuery={searchQuery} 
+            sortBy={sortBy}
+            filterOfficial={filterOfficial}
+            filterDiscount={filterDiscount}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+          />
+        </div>
       </main>
       <Footer />
     </div>
@@ -97,8 +104,8 @@ function HomeContent() {
 export default function Home() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-t-[#f57224] border-gray-200 rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-t-indigo-600 border-indigo-200 rounded-full animate-spin shadow-lg"></div>
       </div>
     }>
       <HomeContent />
